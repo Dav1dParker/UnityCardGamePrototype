@@ -1,0 +1,33 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild*/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+*.stacktrace
+*.unitypackage
+
+# Rider / JetBrains
+.idea/
+*.iml
+# VS / MSBuild noise often generated alongside Rider
+.vs/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gradle/Android if added later
+.gradle/
+*.gradle
+*.keystore
