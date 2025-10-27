@@ -10,6 +10,7 @@ namespace _CardGamePrototype.Scripts.Core
         public Guid Id { get; } = Guid.NewGuid();
         
         // For future logic
+        /*
         public string Suit { get; set; }
         public string Value { get; set; }
 
@@ -19,5 +20,6 @@ namespace _CardGamePrototype.Scripts.Core
             Suit = suit;
             Value = rank;
         }
+        */
     }
 }
