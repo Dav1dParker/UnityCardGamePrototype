@@ -1,0 +1,55 @@
+{
+    "version": 1,
+    "name": "CardControls",
+    "maps": [
+        {
+            "name": "Pointer",
+            "id": "6e3406d9-da42-4870-b8b1-77a52028e835",
+            "actions": [
+                {
+                    "name": "Point",
+                    "type": "Value",
+                    "id": "d7866839-3050-4ea5-b60d-ad22f91b4ee0",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "7b2aa120-04d7-46f2-b3c4-672d86026fae",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c405b0c8-43f3-4f0e-a7e3-f0ee24c36d2a",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d04a1a38-7fa0-4c83-b85c-42b300c03966",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

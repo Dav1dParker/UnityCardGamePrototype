@@ -22,8 +22,6 @@ namespace _CardGamePrototype.Scripts.View
             float offset = Type == StackType.Tableau ? -25f : 0f;
             for (int i = 0; i < _cards.Count; i++)
             {
-                // log type + offset
-                Debug.Log($"StackView UpdateLayout: name={name}, type={Type}, offset={offset}");
                 var t = _cards[i].transform as RectTransform;
                 t.anchoredPosition = new Vector2(0, i * offset);
             }
