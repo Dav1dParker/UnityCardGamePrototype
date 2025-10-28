@@ -1,108 +1,108 @@
-using _CardGamePrototype.Scripts.View;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using _CardGamePrototype.Scripts.View;
 using UnityEngine.InputSystem;
 
 namespace _CardGamePrototype.Scripts.Input
 {
+    [RequireComponent(typeof(RectTransform))]
     public sealed class CardDragHandler : MonoBehaviour
     {
-        private  Canvas _canvas;
-        private RectTransform _rect;
-        private CanvasGroup _group;
-        private CardControls _controls;
-        private bool _isDragging = false;
-        private Vector2 _startPosition;
-        private Transform _StartParent;
+        private RectTransform rect;
+        private bool dragging;
+        private Vector2 offset;
+        private Canvas canvas;
+        private Transform startParent;
+        private readonly List<CardView> dragGroup = new();
 
-        private void Awake()
+        private void Awake() => rect = GetComponent<RectTransform>();
+
+        public void Begin(Vector2 pointer, Canvas c)
         {
-            _rect = GetComponent<RectTransform>();
-            _group = gameObject.AddComponent<CanvasGroup>();
-            _controls = new CardControls();
-            
-            _canvas = GetComponentInParent<Canvas>();
-            if (_canvas == null)
+            var card = GetComponent<CardView>();
+            var stack = card.Stack;
+            if (stack == null)
+                return;
+
+            canvas = c;
+            dragGroup.Clear();
+            if (stack.Type == Core.StackType.Tableau)
             {
-                _canvas = gameObject.AddComponent<Canvas>();
-                if (_canvas == null)
+                bool include = false;
+                foreach (Transform child in stack.transform)
                 {
-                    Debug.LogError("Canvas not found");
+                    var v = child.GetComponent<CardView>();
+                    if (v == null) continue;
+                    if (v == card) include = true;
+                    if (include) dragGroup.Add(v);
                 }
-            }
-        }
-
-        private void OnEnable()
-        {
-            _controls.Enable();
-            _controls.Pointer.Click.performed += ctx => OnClickPerformed();
-            _controls.Pointer.Click.canceled += ctx => OnClickCanceled();
-        }
-
-        private void OnDisable()
-        {
-            _controls.Pointer.Click.performed -= ctx => OnClickPerformed();
-            _controls.Pointer.Click.canceled -= ctx => OnClickCanceled();
-            _controls.Disable();
-        }
-
-        private void OnClickPerformed()
-        {
-            if (!RectTransformUtility.RectangleContainsScreenPoint(_rect, _controls.Pointer.Point.ReadValue<Vector2>())) return;
-            _startPosition = _rect.anchoredPosition;
-            _StartParent = transform.parent;
-            _isDragging = true;
-            _group.blocksRaycasts = false;
-            transform.SetParent(_canvas.transform, true);
-        }
-
-        private void OnClickCanceled()
-        {
-            _isDragging = false;
-            _group.blocksRaycasts = true;
-            
-            var worldPoint = Mouse.current.position.ReadValue();
-            var raycastResults = new System.Collections.Generic.List<RaycastResult>();
-            var eventData = new PointerEventData(EventSystem.current)
-            {
-                position = worldPoint
-            };
-            
-            EventSystem.current.RaycastAll(eventData, raycastResults);
-
-            StackView target = null;
-            foreach (var result in raycastResults)
-            {
-                target = result.gameObject.GetComponentInParent<StackView>();
-                if (target != null) break;
-            }
-
-            if (target != null)
-            {
-                transform.SetParent(target.transform, false);
-                target.AddCard(GetComponent<CardView>());
             }
             else
             {
-                transform.SetParent(_StartParent, false);
-                _StartParent.GetComponent<StackView>().AddCard(GetComponent<CardView>());
-                _rect.anchoredPosition = _startPosition;
+                dragGroup.Add(card);
             }
+
+
+            startParent = stack.transform;
+
+            foreach (var v in dragGroup)
+            {
+                v.transform.SetParent(canvas.transform, true);
+                var g = v.GetComponent<CanvasGroup>() ?? v.gameObject.AddComponent<CanvasGroup>();
+                g.blocksRaycasts = false;
+            }
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                canvas.transform as RectTransform, pointer, null, out var local);
+            offset = rect.anchoredPosition - local;
+            dragging = true;
         }
 
+        public void End(Vector2 pointer)
+        {
+            if (!dragging) return;
+            dragging = false;
+
+            var data = new PointerEventData(EventSystem.current) { position = pointer };
+            var hits = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(data, hits);
+
+            StackView target = null;
+            foreach (var h in hits)
+            {
+                target = h.gameObject.GetComponentInParent<StackView>();
+                if (target != null) break;
+            }
+
+            if (target == null || target.Type == Core.StackType.Deck)
+                target = startParent.GetComponent<StackView>();
+
+            var source = startParent.GetComponent<StackView>();
+            source?.RemoveCards(dragGroup);
+
+            foreach (var v in dragGroup)
+            {
+                var g = v.GetComponent<CanvasGroup>();
+                if (g != null) g.blocksRaycasts = true;
+                target.AddCard(v);
+            }
+
+            dragGroup.Clear();
+        }
 
         private void Update()
         {
-            if (!_isDragging) return;
-            
+            if (!dragging) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _canvas.transform as RectTransform,
-                _controls.Pointer.Point.ReadValue<Vector2>(),
-                null, out var pos);
-            _rect.anchoredPosition = pos;
+                canvas.transform as RectTransform,
+                Mouse.current.position.ReadValue(),
+                null,
+                out var local);
+
+            var pos = local + offset;
+            foreach (var v in dragGroup)
+                ((RectTransform)v.transform).anchoredPosition = pos;
         }
-        
-        
     }
 }

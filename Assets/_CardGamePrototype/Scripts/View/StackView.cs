@@ -10,12 +10,22 @@ namespace _CardGamePrototype.Scripts.View
         public StackType Type => type;
         private readonly List<CardView> _cards = new();
 
-        public void AddCard(CardView cardView)
+        public void AddCard(CardView view)
         {
-            _cards.Add(cardView);
-            cardView.transform.SetParent(transform, false);
+            _cards.Add(view);
+            view.Stack = this;
+            view.transform.SetParent(transform, false);
             UpdateLayout();
         }
+
+        
+        public void RemoveCards(IEnumerable<CardView> cards)
+        {
+            foreach (var c in cards)
+                _cards.Remove(c);
+            UpdateLayout();
+        }
+
 
         private void UpdateLayout()
         {

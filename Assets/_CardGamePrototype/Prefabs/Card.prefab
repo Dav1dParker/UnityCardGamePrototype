@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 8733454793465294104}
   - component: {fileID: 8912550205294591111}
   - component: {fileID: 5957779698944312847}
-  - component: {fileID: 2626713916096170096}
+  - component: {fileID: 4650273932013826157}
+  - component: {fileID: 6243833956023165478}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -89,7 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de7e7d5f3d8cc1c498f880556696519f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_CardGamePrototype.Scripts.View.CardView
---- !u!114 &2626713916096170096
+--- !u!114 &4650273932013826157
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,3 +102,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f08ccb791f3736e4ab8bbbde9684b83a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_CardGamePrototype.Scripts.Input.CardDragHandler
+--- !u!225 &6243833956023165478
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3065437522297257876}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
