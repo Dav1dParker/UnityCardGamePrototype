@@ -20,6 +20,7 @@ namespace _CardGamePrototype.Scripts.Input
         private RectTransform _dragContainer;
         private readonly Dictionary<CardView, Image> _cardImages = new();
         private Color _originalColor;
+        private readonly List<int> _sourceIndices = new();
 
 
         public void Begin(Vector2 pointer, Canvas canvas)
@@ -49,6 +50,11 @@ namespace _CardGamePrototype.Scripts.Input
             }
 
             _startParent = stack.transform;
+            
+            _sourceIndices.Clear();
+            foreach (var v in _dragGroup)
+                _sourceIndices.Add(v.transform.GetSiblingIndex());
+
             
             var parentRect = (RectTransform)stackRect.parent;
 
@@ -227,15 +233,16 @@ namespace _CardGamePrototype.Scripts.Input
 
             if (destination == target)
             {
-                var record = new _CardGamePrototype.Scripts.Logic.MoveRecord
+                var rec = new _CardGamePrototype.Scripts.Logic.MoveRecord
                 {
                     Source = source,
                     Target = destination,
                     Cards = new List<_CardGamePrototype.Scripts.View.CardView>(_dragGroup),
-                    SourceIndices = origIndices
+                    SourceIndices = new List<int>(_sourceIndices)
                 };
-                FindFirstObjectByType<_CardGamePrototype.Scripts.Logic.GameHistory>()?.Push(record);
+                FindFirstObjectByType<_CardGamePrototype.Scripts.Logic.GameHistory>()?.Push(rec);
             }
+
 
             destination.UpdateLayout();
             if (destination != source)

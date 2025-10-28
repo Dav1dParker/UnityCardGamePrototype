@@ -14,20 +14,20 @@ namespace _CardGamePrototype.Scripts.Logic
         public void Undo()
         {
             if (_moves.Count == 0) return;
-            var move = _moves.Pop();
+            var m = _moves.Pop();
 
-            move.Target.RemoveCards(move.Cards);
+            m.Target.RemoveCards(m.Cards);
+            
+            var pairs = new List<(CardView card, int idx)>(m.Cards.Count);
+            for (int i = 0; i < m.Cards.Count; i++) pairs.Add((m.Cards[i], m.SourceIndices[i]));
+            pairs.Sort((a, b) => a.idx.CompareTo(b.idx));
 
-            for (int i = 0; i < move.Cards.Count; i++)
-            {
-                var card = move.Cards[i];
-                card.transform.SetParent(move.Source.transform, false);
-                card.transform.SetSiblingIndex(move.SourceIndices[i]);
-                card.Stack = move.Source;
-            }
+            foreach (var p in pairs)
+                m.Source.InsertCardAt(p.card, p.idx);
 
-            move.Source.UpdateLayout();
-            move.Target.UpdateLayout();
+            m.Source.UpdateLayout();
+            m.Target.UpdateLayout();
         }
+
     }
 }

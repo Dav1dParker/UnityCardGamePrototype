@@ -21,6 +21,14 @@ namespace _CardGamePrototype.Scripts.View
         {
             foreach (var v in views) _cards.Remove(v);
         }
+        
+        public void InsertCardAt(CardView view, int index)
+        {
+            index = Mathf.Clamp(index, 0, _cards.Count);
+            _cards.Insert(index, view);
+            view.Stack = this;
+            view.transform.SetParent(transform, false);
+        }
 
         public void UpdateLayout()
         {
@@ -32,9 +40,9 @@ namespace _CardGamePrototype.Scripts.View
 
             for (int i = 0; i < _cards.Count; i++)
             {
-                var rect = (RectTransform)_cards[i].transform;
-                rect.SetSiblingIndex(i);
-                rect.anchoredPosition = new Vector2(0f, i * yOffset);
+                var rt = (RectTransform)_cards[i].transform;
+                rt.SetSiblingIndex(i);
+                rt.anchoredPosition = new Vector2(0f, i * yOffset);
             }
         }
 
