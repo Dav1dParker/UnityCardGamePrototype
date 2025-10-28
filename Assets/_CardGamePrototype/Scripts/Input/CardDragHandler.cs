@@ -187,29 +187,20 @@ namespace _CardGamePrototype.Scripts.Input
             }
 
             var valid = false;
-
             if (target != null)
             {
                 switch (target.Type)
                 {
-                    case Core.StackType.Deck:
-                        valid = false;
-                        break;
-
                     case Core.StackType.Foundation:
                         valid = _dragGroup.Count == 1;
                         break;
-
                     case Core.StackType.Tableau:
                         if (target.transform.childCount == 0)
-                        {
                             valid = true;
-                        }
                         else
                         {
                             var hitCard = hits[0].gameObject.GetComponent<CardView>() ??
                                           hits[0].gameObject.GetComponentInParent<CardView>();
-
                             if (hitCard != null && hitCard.Stack == target)
                             {
                                 int index = hitCard.transform.GetSiblingIndex();
@@ -223,8 +214,10 @@ namespace _CardGamePrototype.Scripts.Input
 
             var destination = valid ? target : source;
 
-            source.RemoveCards(_dragGroup);
+            var origIndices = new List<int>(_dragGroup.Count);
+            foreach (var v in _dragGroup) origIndices.Add(v.transform.GetSiblingIndex());
 
+            source.RemoveCards(_dragGroup);
             foreach (var v in _dragGroup)
             {
                 var g = v.GetComponent<CanvasGroup>();
@@ -232,10 +225,22 @@ namespace _CardGamePrototype.Scripts.Input
                 destination.AddCard(v);
             }
 
+            if (destination == target)
+            {
+                var record = new _CardGamePrototype.Scripts.Logic.MoveRecord
+                {
+                    Source = source,
+                    Target = destination,
+                    Cards = new List<_CardGamePrototype.Scripts.View.CardView>(_dragGroup),
+                    SourceIndices = origIndices
+                };
+                FindFirstObjectByType<_CardGamePrototype.Scripts.Logic.GameHistory>()?.Push(record);
+            }
+
             destination.UpdateLayout();
             if (destination != source)
                 source.UpdateLayout();
-            
+
             foreach (var img in _cardImages.Values)
                 img.color = _originalColor;
             _cardImages.Clear();
@@ -244,8 +249,6 @@ namespace _CardGamePrototype.Scripts.Input
             _dragGroup.Clear();
             _localOffsets.Clear();
         }
-
-
         
     }
 }
