@@ -79,7 +79,8 @@ Assets/_CardGamePrototype/
 
 1. **Клонируйте репозиторий**
 
-    git clone https://github.com/Dav1dParker/UnityCardGamePrototype.git
+    ```git clone https://github.com/Dav1dParker/UnityCardGamePrototype.git```
+
 2. Откройте проект в \*\*Unity 6000.2.9f1\*\* или более новой версии.
 3. Откройте сцену:
 

@@ -74,7 +74,9 @@ Assets/_CardGamePrototype/
 ## How to Run
 
 1. **Clone the repository**
-  git clone https://github.com/Dav1dParker/UnityCardGamePrototype.git
+
+    ```git clone https://github.com/Dav1dParker/UnityCardGamePrototype.git```
+
 2. Open the project in **Unity 6000.2.9f1** or newer.
 3. Open the scene:
 
