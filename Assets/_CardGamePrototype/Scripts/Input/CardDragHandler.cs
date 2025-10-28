@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using _CardGamePrototype.Scripts.View;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace _CardGamePrototype.Scripts.Input
 {
@@ -17,6 +18,9 @@ namespace _CardGamePrototype.Scripts.Input
         private readonly List<CardView> _dragGroup = new();
         private readonly Dictionary<CardView, Vector2> _localOffsets = new();
         private RectTransform _dragContainer;
+        private readonly Dictionary<CardView, Image> _cardImages = new();
+        private Color _originalColor;
+
 
         public void Begin(Vector2 pointer, Canvas canvas)
         {
@@ -27,8 +31,7 @@ namespace _CardGamePrototype.Scripts.Input
             _canvas = canvas;
             _dragGroup.Clear();
             _localOffsets.Clear();
-
-            // build group: from clicked card's sibling index to the last child (tableau only)
+            
             var stackRect = (RectTransform)stack.transform;
             int start = card.transform.GetSiblingIndex();
             if (stack.Type == Core.StackType.Tableau)
@@ -72,6 +75,19 @@ namespace _CardGamePrototype.Scripts.Input
                 g.blocksRaycasts = false;
             }
             
+            _cardImages.Clear();
+            foreach (var v in _dragGroup)
+            {
+                var img = v.GetComponent<Image>();
+                if (img != null)
+                {
+                    _cardImages[v] = img;
+                    _originalColor = img.color;
+                    img.color = new Color(_originalColor.r, _originalColor.g, _originalColor.b, 0.5f);
+                }
+            }
+
+            
             RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, pointer, null, out var local);
             _offset = _dragContainer.anchoredPosition - local;
 
@@ -90,6 +106,66 @@ namespace _CardGamePrototype.Scripts.Input
                 out var local);
 
             _dragContainer.anchoredPosition = local + _offset;
+            
+            if (_isDragging)
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    _canvas.transform as RectTransform,
+                    Mouse.current.position.ReadValue(),
+                    null, out var pointerLocal);
+                _dragContainer.anchoredPosition = pointerLocal + _offset;
+                
+                var data = new PointerEventData(EventSystem.current)
+                {
+                    position = Mouse.current.position.ReadValue()
+                };
+                var hits = new List<RaycastResult>();
+                EventSystem.current.RaycastAll(data, hits);
+
+                StackView target = null;
+                foreach (var h in hits)
+                {
+                    target = h.gameObject.GetComponent<StackView>() ?? h.gameObject.GetComponentInParent<StackView>();
+                    if (target) break;
+                }
+
+                bool canDrop = false;
+                if (target)
+                {
+                    switch (target.Type)
+                    {
+                        case Core.StackType.Foundation:
+                            canDrop = _dragGroup.Count == 1;
+                            break;
+                        case Core.StackType.Tableau:
+                            if (target.transform.childCount == 0)
+                                canDrop = true;
+                            else
+                            {
+                                var hitCard = hits[0].gameObject.GetComponent<CardView>() ??
+                                              hits[0].gameObject.GetComponentInParent<CardView>();
+                                if (hitCard && hitCard.Stack == target)
+                                {
+                                    int index = hitCard.transform.GetSiblingIndex();
+                                    int last = target.transform.childCount - 1;
+                                    canDrop = index == last;
+                                }
+                            }
+                            break;
+                    }
+                }
+                
+                float alpha = canDrop ? 1f : 0.5f;
+
+                foreach (var img in _cardImages.Values)
+                {
+                    var c = _originalColor;
+                    c.a = alpha;
+                    img.color = c;
+                }
+
+            }
+
         }
 
 
@@ -159,6 +235,10 @@ namespace _CardGamePrototype.Scripts.Input
             destination.UpdateLayout();
             if (destination != source)
                 source.UpdateLayout();
+            
+            foreach (var img in _cardImages.Values)
+                img.color = _originalColor;
+            _cardImages.Clear();
 
             Destroy(_dragContainer.gameObject);
             _dragGroup.Clear();
