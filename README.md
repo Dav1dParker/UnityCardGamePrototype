@@ -1,74 +1,101 @@
-\# Card Game Prototype (Unity)
+# Test Task – Card Game Prototype
 
+This Unity 2D project implements a **drag-and-drop card stacking system** with dynamic spacing and undo functionality.  
+The prototype demonstrates clean modular architecture, the new Unity Input System, and Assembly Definition–based project organization.
 
+---
 
-A lightweight Unity prototype demonstrating a modular card stacking and dragging system.
+## Task Summary
 
-Built with the new Input System, dynamic tableau offsets, and assembly definitions for faster iteration.
+Create a scene where the player can **drag and stack cards** between deck, tableau, and foundation piles.  
+Each pile type follows its own rules.  
+Offsets between tableau cards scale automatically with pile height.  
+The project must use **Unity’s new Input System** and be **modularized using Assembly Definitions**.
 
+**Unity version:** `6000.2.9f1`
 
+---
 
-\## Features
+## Features
 
+### Card Dragging
+- Implemented using **Unity New Input System**
+- Supports:
+  - Single-card drag
+  - Sub-stack drag from tableau
+- Cards become **half-transparent** when hovering over an invalid target and **fully opaque** when valid
+- Smooth drag container prevents overlapping
 
+### Stack System
+- Three stack types:
+  - **Deck** – initial card pile
+  - **Tableau** – allows stacked placement with vertical offset
+  - **Foundation** – accepts only one card at a time
+- **Dynamic offset scaling**: spacing automatically increases with the number of cards in a tableau
 
-\### Card Dragging
+### Undo System
+- Undo button reverts the last successful move between stacks
+- Works across all stack types
+- Restores correct sibling order and tableau offset
+- Includes one **unused button** placeholder for future functionality
 
-\- Uses Unity’s new Input System.
+### Architecture
+- Clear separation of logic:
+  - **Core** — stack management and layout
+  - **Input** — drag handling via new Input System
+  - **View** — card visuals and interactions
+  - **Logic** — undo system and history tracking
+- Modularized with **Assembly Definitions (.asmdef)** for faster compilation and strict dependency flow:
 
-\- Drag a single card or a sub-stack.
+---
 
-\- While dragging, cards are half-transparent if the current drop is invalid and fully opaque if valid.
+## Folder Structure
 
+```
 
+Assets/_CardGamePrototype/
+│
+├── Scripts/
+│   ├── Core/        # StackView, StackType
+│   ├── Input/       # InputController, CardDragHandler, CardControls
+│   ├── View/        # CardView
+│   ├── Logic/       # GameHistory, MoveRecord, UndoButton
+│
+└── Prefabs/
+├── Card.prefab
+├── Deck.prefab
+├── Tableau.prefab
+└── Foundation.prefab
 
-\### Stack System
+````
 
-\- Three stack types:
+---
 
-&nbsp; - Deck — initial pile.
+## How to Run
 
-&nbsp; - Tableau — stacked placement with vertical offset.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Dav1dParker/UnityCardGamePrototype.git
+```
 
-&nbsp; - Foundation — accepts only one card at a time.
+2. Open the project in **Unity 6000.2.9f1** or newer.
+3. Open the scene:
 
-\- Tableau offset \*\*scales automatically\*\* with the number of cards in the stack.
+   ```
+   Assets/_CardGamePrototype/Scenes/SampleScene.unity
+   ```
+4. Press **Play**.
+5. Drag cards between stacks and test the Undo button.
 
+---
 
+## Technical Notes
 
-\### Undo System
+* Built with **Unity New Input System**
+* Offsets scale with tableau pile size
+* Undo system fully restores card positions and layout
+* Assembly Definitions used to separate subsystems and speed up compilation
 
-\- Undo button reverts the last valid move between stacks.
+---
 
-
-
-\### Highlights
-
-\- Separation of \*\*view\*\*, \*\*input\*\*, and \*\*core\*\* logic.
-
-\- Assembly Definitions (`.asmdef`) split the project into:
-
-&nbsp; - `\_CardGamePrototype.Core`
-
-&nbsp; - `\_CardGamePrototype.View`
-
-&nbsp; - `\_CardGamePrototype.Input`
-
-&nbsp; - `\_CardGamePrototype.Logic`
-
-&nbsp; - `\_CardGamePrototype.Bootstrap`
-
-
-
-\## Getting Started
-
-1\. Open the project in Unity 2022 or newer.
-
-2\. Open `SampleScene`.
-
-3\. Press \*\*Play\*\*. Drag cards between stacks and use the Undo button.
-
-
-
-
-
+```
