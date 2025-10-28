@@ -1,18 +1,21 @@
-# Test Task – Card Game Prototype
+# Card Game Prototype
+
+[Russian README](READMEru.md)
 
 This Unity 2D project implements a **drag-and-drop card stacking system** with dynamic spacing and undo functionality.  
 The prototype demonstrates clean modular architecture, the new Unity Input System, and Assembly Definition–based project organization.
 
 ---
 
-## Task Summary
+## Project Summary
 
-Create a scene where the player can **drag and stack cards** between deck, tableau, and foundation piles.  
+Scene where the player can **drag and stack cards** between deck, tableau, and foundation piles.  
 Each pile type follows its own rules.  
-Offsets between tableau cards scale automatically with pile height.  
-The project must use **Unity’s new Input System** and be **modularized using Assembly Definitions**.
+Offsets between tableau cards scale automatically with pile height.
 
 **Unity version:** `6000.2.9f1`
+
+[Video showcase](https://youtu.be/jrI0XX8dJ5Q)
 
 ---
 
@@ -31,21 +34,18 @@ The project must use **Unity’s new Input System** and be **modularized using A
   - **Deck** – initial card pile
   - **Tableau** – allows stacked placement with vertical offset
   - **Foundation** – accepts only one card at a time
-- **Dynamic offset scaling**: spacing automatically increases with the number of cards in a tableau
+- **Dynamic offset scaling**: spacing automatically decreases with the number of cards in a tableau
 
 ### Undo System
 - Undo button reverts the last successful move between stacks
 - Works across all stack types
 - Restores correct sibling order and tableau offset
-- Includes one **unused button** placeholder for future functionality
 
 ### Architecture
-- Clear separation of logic:
   - **Core** — stack management and layout
   - **Input** — drag handling via new Input System
   - **View** — card visuals and interactions
   - **Logic** — undo system and history tracking
-- Modularized with **Assembly Definitions (.asmdef)** for faster compilation and strict dependency flow:
 
 ---
 
@@ -56,9 +56,9 @@ The project must use **Unity’s new Input System** and be **modularized using A
 Assets/_CardGamePrototype/
 │
 ├── Scripts/
-│   ├── Core/        # StackView, StackType
+│   ├── Core/        # StackType, Card, CardStack
 │   ├── Input/       # InputController, CardDragHandler, CardControls
-│   ├── View/        # CardView
+│   ├── View/        # CardView, StackView, GameBootstrap
 │   ├── Logic/       # GameHistory, MoveRecord, UndoButton
 │
 └── Prefabs/
