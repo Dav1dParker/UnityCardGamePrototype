@@ -16,7 +16,7 @@ namespace _CardGamePrototype.Scripts.Input
         {
             controls = new CardControls();
             if (canvas == null)
-                canvas = FindObjectOfType<Canvas>();
+                canvas = FindFirstObjectByType<Canvas>();
         }
 
         private void OnEnable()

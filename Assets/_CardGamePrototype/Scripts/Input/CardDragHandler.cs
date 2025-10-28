@@ -9,14 +9,16 @@ namespace _CardGamePrototype.Scripts.Input
     [RequireComponent(typeof(RectTransform))]
     public sealed class CardDragHandler : MonoBehaviour
     {
-        private RectTransform rect;
-        private bool dragging;
-        private Vector2 offset;
-        private Canvas canvas;
-        private Transform startParent;
-        private readonly List<CardView> dragGroup = new();
+        private RectTransform _rect;
+        private bool _isDragging;
+        private Vector2 _offset;
+        private Canvas _canvas;
+        private Transform _startParent;
+        private readonly List<CardView> _dragGroup = new();
+        
+        private readonly Dictionary<CardView, Vector2> _localOffsets = new();
 
-        private void Awake() => rect = GetComponent<RectTransform>();
+        private void Awake() => _rect = GetComponent<RectTransform>();
 
         public void Begin(Vector2 pointer, Canvas c)
         {
@@ -25,8 +27,8 @@ namespace _CardGamePrototype.Scripts.Input
             if (stack == null)
                 return;
 
-            canvas = c;
-            dragGroup.Clear();
+            _canvas = c;
+            _dragGroup.Clear();
             if (stack.Type == Core.StackType.Tableau)
             {
                 bool include = false;
@@ -35,34 +37,37 @@ namespace _CardGamePrototype.Scripts.Input
                     var v = child.GetComponent<CardView>();
                     if (v == null) continue;
                     if (v == card) include = true;
-                    if (include) dragGroup.Add(v);
+                    if (include) _dragGroup.Add(v);
                 }
             }
             else
             {
-                dragGroup.Add(card);
+                _dragGroup.Add(card);
             }
 
 
-            startParent = stack.transform;
+            _startParent = stack.transform;
 
-            foreach (var v in dragGroup)
+            foreach (var v in _dragGroup)
             {
-                v.transform.SetParent(canvas.transform, true);
+                var rectV = (RectTransform)v.transform;
+                _localOffsets[v] = rectV.anchoredPosition;
+
+                v.transform.SetParent(_canvas.transform, true);
                 var g = v.GetComponent<CanvasGroup>() ?? v.gameObject.AddComponent<CanvasGroup>();
                 g.blocksRaycasts = false;
             }
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvas.transform as RectTransform, pointer, null, out var local);
-            offset = rect.anchoredPosition - local;
-            dragging = true;
+                _canvas.transform as RectTransform, pointer, null, out var local);
+            _offset = _rect.anchoredPosition - local;
+            _isDragging = true;
         }
 
         public void End(Vector2 pointer)
         {
-            if (!dragging) return;
-            dragging = false;
+            if (!_isDragging) return;
+            _isDragging = false;
 
             var data = new PointerEventData(EventSystem.current) { position = pointer };
             var hits = new List<RaycastResult>();
@@ -76,33 +81,39 @@ namespace _CardGamePrototype.Scripts.Input
             }
 
             if (target == null || target.Type == Core.StackType.Deck)
-                target = startParent.GetComponent<StackView>();
+                target = _startParent.GetComponent<StackView>();
 
-            var source = startParent.GetComponent<StackView>();
-            source?.RemoveCards(dragGroup);
+            var source = _startParent.GetComponent<StackView>();
+            source?.RemoveCards(_dragGroup);
 
-            foreach (var v in dragGroup)
+            foreach (var v in _dragGroup)
             {
                 var g = v.GetComponent<CanvasGroup>();
                 if (g != null) g.blocksRaycasts = true;
                 target.AddCard(v);
             }
 
-            dragGroup.Clear();
+            _dragGroup.Clear();
+            _localOffsets.Clear();
         }
 
         private void Update()
         {
-            if (!dragging) return;
+            if (!_isDragging) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvas.transform as RectTransform,
+                _canvas.transform as RectTransform,
                 Mouse.current.position.ReadValue(),
                 null,
                 out var local);
 
-            var pos = local + offset;
-            foreach (var v in dragGroup)
-                ((RectTransform)v.transform).anchoredPosition = pos;
+            var pos = local + _offset;
+            foreach (var v in _dragGroup)
+            {
+                var rectV = (RectTransform)v.transform;
+                var baseOffset = _localOffsets.TryGetValue(v, out var off) ? off : Vector2.zero;
+                rectV.anchoredPosition = pos + off;
+            }
+
         }
     }
 }
