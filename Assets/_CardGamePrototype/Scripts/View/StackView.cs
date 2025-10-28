@@ -15,26 +15,29 @@ namespace _CardGamePrototype.Scripts.View
             _cards.Add(view);
             view.Stack = this;
             view.transform.SetParent(transform, false);
-            UpdateLayout();
         }
 
-        
-        public void RemoveCards(IEnumerable<CardView> cards)
+        public void RemoveCards(IEnumerable<CardView> views)
         {
-            foreach (var c in cards)
-                _cards.Remove(c);
-            UpdateLayout();
+            foreach (var v in views) _cards.Remove(v);
         }
 
-
-        private void UpdateLayout()
+        public void UpdateLayout()
         {
-            float offset = Type == StackType.Tableau ? -25f : 0f;
+            if (_cards.Count == 0) return;
+
+            float baseOffset = 45f;
+            float scale = Mathf.Clamp01(17f / _cards.Count);
+            float yOffset = Type == StackType.Tableau ? -(baseOffset * scale) : 0f;
+
             for (int i = 0; i < _cards.Count; i++)
             {
-                var t = _cards[i].transform as RectTransform;
-                t.anchoredPosition = new Vector2(0, i * offset);
+                var rect = (RectTransform)_cards[i].transform;
+                rect.SetSiblingIndex(i);
+                rect.anchoredPosition = new Vector2(0f, i * yOffset);
             }
         }
+
+
     }
 }

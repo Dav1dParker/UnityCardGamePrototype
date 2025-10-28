@@ -9,10 +9,11 @@ namespace _CardGamePrototype.Scripts.View
         [SerializeField] private StackView deckStack;
         [SerializeField] private StackView[] tableauStacks;
         [SerializeField] private CardView cardPrefab;
+        [SerializeField] private int initialDeckSize = 52;
 
         private void Start()
         {
-            for (int i = 0; i < 52; i++)
+            for (int i = 0; i < initialDeckSize; i++)
             {
                 var card = new Card();
                 var view = Instantiate(cardPrefab, deckStack.transform);
