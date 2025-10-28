@@ -1,0 +1,8 @@
+{
+  "name": "_CardGamePrototype.Logic",
+  "references": [
+    "_CardGamePrototype.Core",
+    "_CardGamePrototype.View"
+  ],
+  "rootNamespace": "_CardGamePrototype.Scripts.Logic"
+}

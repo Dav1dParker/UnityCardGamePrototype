@@ -1,0 +1,7 @@
+{
+  "name": "_CardGamePrototype.View",
+  "references": [
+    "_CardGamePrototype.Core"
+  ],
+  "rootNamespace": "_CardGamePrototype.Scripts.View"
+}

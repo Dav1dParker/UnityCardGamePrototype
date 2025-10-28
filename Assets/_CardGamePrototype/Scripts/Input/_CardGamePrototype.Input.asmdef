@@ -1,0 +1,10 @@
+{
+  "name": "_CardGamePrototype.Input",
+  "references": [
+    "Unity.InputSystem",
+    "_CardGamePrototype.Core",
+    "_CardGamePrototype.View",
+    "_CardGamePrototype.Logic"
+  ],
+  "rootNamespace": "_CardGamePrototype.Scripts.Input"
+}
