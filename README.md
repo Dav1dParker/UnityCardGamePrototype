@@ -74,16 +74,11 @@ Assets/_CardGamePrototype/
 ## How to Run
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Dav1dParker/UnityCardGamePrototype.git
-```
-
+  git clone https://github.com/Dav1dParker/UnityCardGamePrototype.git
 2. Open the project in **Unity 6000.2.9f1** or newer.
 3. Open the scene:
 
-   ```
-   Assets/_CardGamePrototype/Scenes/SampleScene.unity
-   ```
+   ```Assets/_CardGamePrototype/Scenes/SampleScene.unity```
 4. Press **Play**.
 5. Drag cards between stacks and test the Undo button.
 
@@ -97,5 +92,3 @@ Assets/_CardGamePrototype/
 * Assembly Definitions used to separate subsystems and speed up compilation
 
 ---
-
-```
